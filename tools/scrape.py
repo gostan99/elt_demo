@@ -69,9 +69,9 @@ def _parse_product(doc: html.HtmlElement) -> dict[str, Any]:
     star_cls = star_nodes[0].get("class", "") if star_nodes else ""
     rating_word = None
     for key in STAR_MAP:
-		if key in star_cls:
-			rating_word = key
-			break
+        if key in star_cls:
+            rating_word = key
+            break
     return {"title": title, "price": price, "availability": avail_txt, "star_rating": STAR_MAP.get(rating_word or "", None)}
 
 
@@ -110,23 +110,29 @@ def scrape(category_url: str, pages: int) -> None:
 
     # Visit each product page, save raw HTML, extract details
     output: list[dict[str, Any]] = []
-    for link, base in products.items():
+    for item in products:
+        link = item["product_url"]
         resp = session.get(link, timeout=20)
         resp.raise_for_status()
         slug = _slug_from_url(link)
         html_path = Path(settings.html_backup_dir) / f"{slug}.html"
         html_path.write_text(resp.text, encoding="utf-8")
-				
+
         doc = html.fromstring(resp.text)
         details = _parse_product(doc)
-        record = {
-            **details,
-            "product_url": link,
-        }
+        record = {**details, "product_url": link}
         output.append(record)
 
     # Save JSON
-    Path(settings.books_json).write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path(settings.books_json).write_text(
+        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    logger.info(
+        "Scrape complete: %d books -> %s (HTML in %s)",
+        len(output),
+        Path(settings.books_json).resolve(),
+        Path(settings.html_backup_dir).resolve(),
+    )
 
 
 if __name__ == "__main__":
