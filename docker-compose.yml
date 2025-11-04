@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  books-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CATEGORY_URL: "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html"
+      PAGES: "3"
+      PORT: "8000"
+    volumes:
+      - ./data:/app/data
