@@ -97,7 +97,7 @@ def scrape(category_url: str, pages: int) -> None:
 
         resp = session.get(url, timeout=20)
         resp.raise_for_status()
-        doc = html.fromstring(resp.text)
+        doc = html.fromstring(resp.content)
 
         # Find products on listing
         items = _parse_listing(doc, url)
@@ -114,11 +114,12 @@ def scrape(category_url: str, pages: int) -> None:
         link = item["product_url"]
         resp = session.get(link, timeout=20)
         resp.raise_for_status()
+        content = resp.content
         slug = _slug_from_url(link)
         html_path = Path(settings.html_backup_dir) / f"{slug}.html"
-        html_path.write_text(resp.text, encoding="utf-8")
+        html_path.write_bytes(content)
 
-        doc = html.fromstring(resp.text)
+        doc = html.fromstring(content)
         details = _parse_product(doc)
         record = {**details, "product_url": link}
         output.append(record)
