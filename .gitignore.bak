@@ -2,8 +2,8 @@
 .env
 
 # Data outputs
-# data/
-# !data/.gitkeep
+data/
+!data/.gitkeep
 
 # Python cache
 __pycache__/
