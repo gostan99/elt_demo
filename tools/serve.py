@@ -5,7 +5,7 @@ from pathlib import Path
 from threading import Lock
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from config import settings
@@ -49,7 +49,18 @@ def _persist_store() -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-app = FastAPI(title="Books API", version="1.0.0")
+
+
+
+def require_api_key(x_api_key: str | None = Header(default=None, alias="X-API-Key")) -> None:
+    expected = settings.api_key
+    if not expected:
+        return
+    if x_api_key != expected:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
+
+
+app = FastAPI(title="Books API", version="1.0.0", dependencies=[Depends(require_api_key)])
 
 
 @app.on_event("startup")

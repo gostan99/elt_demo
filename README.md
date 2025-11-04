@@ -2,6 +2,8 @@
 
 ## Docker (fastest way to run everything)
 
+Copy `.env.example` to `.env` and adjust paths or `API_KEY` as needed. Clients must send `X-API-Key: <value>` if API_KEY is set
+
 ```bash
 docker compose up --build
 ```
@@ -18,10 +20,12 @@ docker compose exec books-api python -m tools.scrape --category-url ... --pages 
 docker compose exec books-api python -m tools.enrich
 ```
 
-After running the tools inside the container, restart the service so FastAPI reloads the dataset
+After running the tools inside the container, restart the service so FastAPI reloads the dataset:
+
 ```bash
 docker compose restart books-api
 ```
+
 ## Manual run (Python)
 
 ### Prerequisites
@@ -36,6 +40,8 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+Copy `.env.example` to `.env` and adjust paths or `API_KEY` as needed. Clients must send `X-API-Key: <value>` if API_KEY is set
+
 ### Part 1 – Scrape books.toscrape.com
 
 1. Pick any category URL (example below).
@@ -49,6 +55,8 @@ Outputs:
 
 - `data/books.json`
 - Raw HTML backups under `data/html_backup/`
+
+> Tip: bump `--pages` to scrape more results if desired.
 
 ## Part 2 – Assign publisher countries
 
@@ -78,4 +86,5 @@ Endpoints:
 
 > The API loads the dataset into memory on startup. If you run
 > `tools/scrape.py` / `tools/enrich.py` again while the API is running,
-> restart the API so it picks up the new data.
+> restart the API so it picks up the new data. When `API_KEY` is set,
+> include `X-API-Key: <value>` on every request.

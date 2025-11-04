@@ -39,6 +39,7 @@ class Settings:
     books_json: Path
     books_with_country: Path
     countries_cache: Path
+    api_key: str | None
 
 
 def get_settings() -> Settings:
@@ -52,6 +53,7 @@ def get_settings() -> Settings:
     countries_cache = Path(
         _env("COUNTRIES_CACHE", str(cache_dir / "countries.json"))
     ).resolve()
+    api_key = _env("API_KEY", "").strip() or None
 
     # Ensure directories exist
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -65,6 +67,7 @@ def get_settings() -> Settings:
         books_json=books_json,
         books_with_country=books_with_country,
         countries_cache=countries_cache,
+        api_key=api_key,
     )
 
 
