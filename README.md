@@ -76,6 +76,6 @@ Endpoints:
 - `POST /books`
 - `DELETE /books/{title}` (URL‑encoded title)
 
-> **Note:** the API loads the dataset into memory on startup. If you run
+> The API loads the dataset into memory on startup. If you run
 > `tools/scrape.py` / `tools/enrich.py` again while the API is running,
 > restart the API so it picks up the new data.
