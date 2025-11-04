@@ -24,8 +24,19 @@ def fetch_countries() -> list[str]:
         except Exception:
             pass
 
-    resp = requests.get("https://restcountries.com/v3.1/all", timeout=30)
-    resp.raise_for_status()
+    url = "https://restcountries.com/v3.1/all"
+    params = {"fields": "name"}
+    try:
+        resp = requests.get(url, params=params, timeout=30)
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        # Fallback to cache if available
+        if cache_path.exists():
+            cached = json.loads(cache_path.read_text(encoding="utf-8"))
+            if isinstance(cached, list) and cached:
+                return [str(c) for c in cached]
+        raise RuntimeError(f"Failed to fetch countries: {exc}") from exc
+
     data = resp.json()
     names: list[str] = []
     for item in data:
