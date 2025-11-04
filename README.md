@@ -1,4 +1,4 @@
-# ETL Demo – Technical Exam Solution
+# ETL Demo
 
 ## Docker (fastest way to run everything)
 
